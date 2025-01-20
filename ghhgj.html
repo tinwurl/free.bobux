@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robux Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #ffcc70, #ff6347);
+            animation: backgroundAnimation 5s ease infinite alternate;
+        }
+        @keyframes backgroundAnimation {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .navbar, footer {
+            background: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 20px;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 50px auto;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            animation: fadeIn 1s;
+            text-align: center;
+        }
+        input, button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+            width: 80%;
+            max-width: 300px;
+        }
+        .hidden {
+            display: none;
+        }
+        .success-message {
+            color: green;
+            font-size: 24px;
+            animation: fadeIn 1s, scaleUp 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleUp {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+        .fireworks, .confetti {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .firework, .confetti-piece {
+            width: 5px;
+            height: 5px;
+            position: absolute;
+            border-radius: 50%;
+        }
+        .firework {
+            background-color: red;
+            animation: explode 1s ease-out forwards;
+        }
+        .confetti-piece {
+            background-color: hsl(200, 70%, 50%);
+            animation: confetti 1s ease-out forwards;
+        }
+        @keyframes explode {
+            0% { transform: scale(1); }
+            100% { transform: scale(10); opacity: 0; }
+        }
+        @keyframes confetti {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(200px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Robux Generator</h1>
+    </div>
+
+    <div class="container">
+        <div class="logo">
+            <img src="your-logo-url.png" alt="Logo" width="100" height="100"><!-- Replace with your logo URL -->
+        </div>
+        <form id="robuxForm">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username" required><br><br>
+            <label for="amount">Amount of Robux (max 100,000):</label><br>
+            <input type="number" id="amount" name="amount" max="100000" required><br><br>
+            <button type="button" onclick="claimRobux()">Claim Robux</button>
+        </form>
+
+        <div id="result" class="hidden">
+            <h2>Bot Verification</h2>
+            <p>Please complete the bot verification to proceed.</p>
+            <button onclick="completeVerification()">Verify</button>
+        </div>
+
+        <div id="loading" class="hidden">
+            <h2>Loading...</h2>
+        </div>
+
+        <div id="countdown" class="hidden">
+            <h2>Claiming Robux in <span id="timer">5</span> seconds...</h2>
+        </div>
+
+        <div id="fireworks" class="fireworks">
+            <!-- Firework elements will be added dynamically -->
+        </div>
+
+        <div id="confetti" class="confetti">
+            <!-- Confetti elements will be added dynamically -->
+        </div>
+    </div>
+
+    <audio id="sound" src="your-sound-url.mp3"></audio><!-- Replace with your sound URL -->
+
+    <footer>
+        &copy; 2025 Robux Prank Generator. All rights reserved.
+    </footer>
+
+    <script>
+        function claimRobux() {
+            const username = document.getElementById("username").value;
+            const amount = document.getElementById("amount").value;
+            if (username && amount <= 100000) {
+                toggleVisibility("robuxForm", "loading");
+                setTimeout(showVerification, 2000);
+            } else {
+                alert("Please enter a valid username and amount of Robux.");
+            }
+        }
+
+        function showVerification() {
+            toggleVisibility("loading", "result");
+        }
+
+        function completeVerification() {
+            toggleVisibility("result", "countdown");
+            startCountdown();
+        }
+
+        function startCountdown() {
+            let timeLeft = 5;
+            const timerElement = document.getElementById("timer");
+            const countdownInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    showSuccess();
+                }
+            }, 1000);
+        }
+
+        function showSuccess() {
+            toggleVisibility("countdown");
+            document.getElementById("sound").play();
+            document.getElementById("result").innerHTML = "<h2 class='success-message'>Successfully claimed!</h2>";
+            launchFireworks();
+            launchConfetti();
+        }
+
+        function launchFireworks() {
+            createEffects("firework", "fireworks", 20);
+        }
+
+        function launchConfetti() {
+            createEffects("confetti-piece", "confetti", 100);
+        }
+
+        function createEffects(className, containerId, count) {
+            const container = document.getElementById(containerId);
+            container.style.display = "block";
+            for (let i = 0; i < count; i++) {
+                const element = document.createElement("div");
+                element.className = className;
+                element.style.top = Math.random() * 100 + "vh";
+                element.style.left = Math.random() * 100 + "vw";
+                element.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                container.appendChild(element);
+                setTimeout(() => element.remove(), 1000);
+            }
+        }
+
+        function toggleVisibility(hideId, showId = null) {
+            document.getElementById(hideId).style.display = "none";
+            if (showId) {
+                document.getElementById(showId).style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
+
